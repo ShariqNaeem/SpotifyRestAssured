@@ -21,7 +21,7 @@ public class RestResource {
                 extract().response();
     }
 
-    public static Response post(String path, String token, String body){
+    public static Response post(String path, String token, Object body){
         return given().
                     baseUri("https://api.spotify.com").
                     auth().oauth2(token).
