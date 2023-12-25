@@ -33,4 +33,15 @@ public class RestResource {
                 .then().spec(getResponseSpec())
                     .extract().response();
     }
+
+    public static Response get(String path, HashMap<String, String> queryParams , String token) {
+        return given().spec(getRequestSpec())
+                    .queryParams(queryParams)
+                    .header("Authorization", "Bearer " + token)
+                .when()
+                    .get(path)
+                .then()
+                    .spec(getResponseSpec())
+                    .extract().response();
+    }
 }
