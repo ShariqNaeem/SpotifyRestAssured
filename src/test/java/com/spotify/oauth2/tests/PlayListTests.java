@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class PlayListTests {
-    @Test
+    @Test(priority = 1, description = "Create a playlist in the user")
     public void createPlaylist(){
         // FakerApi Used for fake data
         Playlist playlist = playlistBuilder(generateName(), generateDescription(), false);
