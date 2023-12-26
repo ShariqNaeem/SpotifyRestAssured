@@ -6,9 +6,11 @@ import com.spotify.oauth2.pojos.Playlist;
 import com.spotify.oauth2.pojos.Tracks;
 import com.spotify.oauth2.utils.ConfigLoader;
 import io.restassured.response.Response;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static com.spotify.oauth2.apis.Route.*;
 import static com.spotify.oauth2.utils.FakerUtils.generateDescription;
@@ -42,8 +44,19 @@ public class PlayListTests {
         Response response = RestResource.get(ME+PLAYLISTS, queryParams, getToken());
         assertThat(response.statusCode(), equalTo(StatusCode.CODE_200.getCode()));
         Tracks playlists = response.as(Tracks.class);
-        assertThat(playlists.getOffset(), is(equalTo(0)));
-        assertThat(playlists.getLimit(), is(equalTo(10)));
+        assertThat(playlists.getOffset(), is(equalTo(Integer.parseInt(queryParams.get("offset")))));
+        assertThat(playlists.getLimit(), is(equalTo(Integer.parseInt(queryParams.get("limit")))));
+    }
+
+    @Test(priority = 3, description = "Get all the playlists of the specific user")
+    public void getSpecificUserPlaylists() {
+        Response response = RestResource.get(USERS +"/"+ ConfigLoader.getConfigLoaderInstance().getPropertyValue("user_id") +PLAYLISTS, getToken());
+        assertThat(response.statusCode(), equalTo(StatusCode.CODE_200.getCode()));
+        Tracks playlists = response.as(Tracks.class);
+        assertThat(playlists.getOffset(), is(equalTo(0))); //By default value of offset
+        assertThat(playlists.getLimit(), is(equalTo(20))); //By default value of limit
+        String s = playlists.getHref();
+        Assert.assertTrue(playlists.getHref().contains(ConfigLoader.getConfigLoaderInstance().getPropertyValue("user_id")));
     }
 
     public Playlist playlistBuilder(String name, String description, boolean _public) {

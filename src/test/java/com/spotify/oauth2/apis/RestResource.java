@@ -44,4 +44,14 @@ public class RestResource {
                     .spec(getResponseSpec())
                     .extract().response();
     }
+
+    public static Response get(String path,String token) {
+        return given().spec(getRequestSpec())
+                    .header("Authorization", "Bearer " + token)
+                .when()
+                    .get(path)
+                .then()
+                    .spec(getResponseSpec())
+                    .extract().response();
+    }
 }
