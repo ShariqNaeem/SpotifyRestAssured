@@ -21,11 +21,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class PlayListTests {
+    public String playlistId;
+    public Playlist createdPlayList;
     @Test(priority = 1, description = "Create a playlist in the user")
     public void createPlaylistTest(){
         // FakerApi Used for fake data
         Playlist playlist = playlistBuilder(generateName(), generateDescription(), false);
-
+        createdPlayList = playlist;
         Response response = RestResource.post(USERS +"/"+ ConfigLoader.getConfigLoaderInstance().getPropertyValue("user_id") + PLAYLISTS, getToken(), playlist);
         assertThat(response.statusCode(), equalTo(StatusCode.CODE_201.getCode()));
 
@@ -33,9 +35,11 @@ public class PlayListTests {
         assertThat(deserializePlaylist.getName(), equalTo(playlist.getName()));
         assertThat(deserializePlaylist.getDescription(), equalTo(playlist.getDescription()));
         assertThat(deserializePlaylist.get_public(), equalTo(playlist.get_public()));
+
+        playlistId = deserializePlaylist.getId();
     }
 
-    @Test(priority = 2, description = "Get all the playlists of the current user")
+    @Test(priority = 3, description = "Get all the playlists of the current user")
     public void getCurrentUserPlaylists() {
         HashMap<String, String> queryParams = new HashMap<>();
         queryParams.put("limit","10");
@@ -48,7 +52,7 @@ public class PlayListTests {
         assertThat(playlists.getLimit(), is(equalTo(Integer.parseInt(queryParams.get("limit")))));
     }
 
-    @Test(priority = 3, description = "Get all the playlists of the specific user")
+    @Test(priority = 2, description = "Get all the playlists of the specific user")
     public void getSpecificUserPlaylists() {
         Response response = RestResource.get(USERS +"/"+ ConfigLoader.getConfigLoaderInstance().getPropertyValue("user_id") +PLAYLISTS, getToken());
         assertThat(response.statusCode(), equalTo(StatusCode.CODE_200.getCode()));
@@ -57,6 +61,16 @@ public class PlayListTests {
         assertThat(playlists.getLimit(), is(equalTo(20))); //By default value of limit
         String s = playlists.getHref();
         Assert.assertTrue(playlists.getHref().contains(ConfigLoader.getConfigLoaderInstance().getPropertyValue("user_id")));
+    }
+
+    @Test(priority = 4, description = "Get a playlist that is created above", dependsOnMethods = "createPlaylistTest")
+    public void getCreatedPlaylist() {
+        Response response = RestResource.get(PLAYLISTS +"/"+ playlistId, getToken());
+        assertThat(response.statusCode(), equalTo(StatusCode.CODE_200.getCode()));
+        Playlist deserializePlaylist = response.as(Playlist.class);
+
+        assertThat(deserializePlaylist.getName(), equalTo(createdPlayList.getName()));
+        assertThat(deserializePlaylist.getDescription(), equalTo(createdPlayList.getDescription()));
     }
 
     public Playlist playlistBuilder(String name, String description, boolean _public) {
