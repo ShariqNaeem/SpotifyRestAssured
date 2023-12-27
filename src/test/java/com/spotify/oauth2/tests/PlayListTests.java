@@ -5,6 +5,7 @@ import com.spotify.oauth2.apis.StatusCode;
 import com.spotify.oauth2.pojos.Playlist;
 import com.spotify.oauth2.pojos.Tracks;
 import com.spotify.oauth2.utils.ConfigLoader;
+import io.qameta.allure.*;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -23,6 +24,12 @@ import static org.hamcrest.Matchers.is;
 public class PlayListTests {
     public String playlistId;
     public Playlist createdPlayList;
+
+    @Story("`SHAR`-12345") //On which story you are working
+    @Link("https://ShariqNaeem.org") //link on which you are working
+    @Link(name = "allure", type = "myLink")
+    @TmsLink("TC-12345")  // Teams management system: used for test cases link
+    @Issue("Bug-12345")   // If there is some issue raised related to the test case
     @Test(priority = 1, description = "Create a playlist in the user")
     public void createPlaylistTest(){
         // FakerApi Used for fake data
